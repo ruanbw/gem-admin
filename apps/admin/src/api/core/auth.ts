@@ -66,5 +66,5 @@ export async function signupApi(data: AuthApi.SignupParams) {
  * 退出登录
  */
 export async function logoutApi() {
-  return baseRequestClient.get('/auth/signup');
+  return baseRequestClient.get('/auth/signout');
 }

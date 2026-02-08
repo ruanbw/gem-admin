@@ -1,12 +1,12 @@
 {
   "folders": [
     {
-      "name": "@vben/backend-mock",
-      "path": "apps/backend-mock",
+      "name": "@vben/admin",
+      "path": "apps/admin",
     },
     {
-      "name": "@vben/admin",
-      "path": "apps/shoping-admin",
+      "name": "@vben/backend-mock",
+      "path": "apps/backend-mock",
     },
     {
       "name": "@vben/web-antd",
