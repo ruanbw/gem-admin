@@ -1,19 +1,24 @@
 <script lang="ts" setup>
-import type { ProductApi } from '#/api/core/product';
+import type { ProductApi } from "#/api/core/product";
 
-import { computed, onMounted, ref } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-
-import { ElButton, ElForm, ElFormItem, ElInput, ElMessage, ElSelect, ElOption, ElUpload } from 'element-plus';
-import type { UploadFiles } from 'element-plus';
+import { computed, onMounted, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
 
 import {
-  createProductApi,
-  getProductApi,
-  updateProductApi,
-} from '#/api';
-import { requestClient } from '#/api/request';
-import { getFileUrl } from '#/composables/file';
+  ElButton,
+  ElForm,
+  ElFormItem,
+  ElInput,
+  ElMessage,
+  ElSelect,
+  ElOption,
+  ElUpload,
+} from "element-plus";
+import type { UploadFiles } from "element-plus";
+
+import { createProductApi, getProductApi, updateProductApi } from "#/api";
+import { requestClient } from "#/api/request";
+import { getFileUrl } from "#/composables/file";
 
 const route = useRoute();
 const router = useRouter();
@@ -26,10 +31,10 @@ const isEdit = computed(() => !!productId.value);
 
 // 表单数据
 const formData = ref<ProductApi.CreateProductParams>({
-  name: '',
-  coverImage: '',
-  description: '',
-  status: 'ONLINE',
+  name: "",
+  coverImage: "",
+  description: "",
+  status: "ONLINE",
   previewImages: [],
 });
 
@@ -48,44 +53,46 @@ async function fetchProduct() {
   loading.value = true;
   try {
     const product = await getProductApi(productId.value);
-    
+
     formData.value = {
       name: product.name,
       coverImage: product.coverImage,
-      description: product.description || '',
+      description: product.description || "",
       status: product.status,
       previewImages: product.previewImages || [],
     };
 
     // 设置封面图文件列表（如果有封面图）
     if (product.coverImage) {
-      coverImageFileList.value = [{
-        name: 'cover-image',
-        url: getFileUrl(product.coverImage),
-        status: 'success',
-        uid: Date.now(),
-      }];
+      coverImageFileList.value = [
+        {
+          name: "cover-image",
+          url: getFileUrl(product.coverImage),
+          status: "success",
+          uid: Date.now(),
+        },
+      ];
     } else {
       coverImageFileList.value = [];
     }
 
     // 设置预览图文件列表
     if (product.previewImages && product.previewImages.length > 0) {
-      previewImagesFileList.value = product.previewImages.map((image, index) => ({
-        name: `preview-image-${index}`,
-        url: getFileUrl(image),
-        status: 'success' as const,
-        uid: Date.now() + index,
-      }));
+      previewImagesFileList.value = product.previewImages.map(
+        (image, index) => ({
+          name: `preview-image-${index}`,
+          url: getFileUrl(image),
+          status: "success" as const,
+          uid: Date.now() + index,
+        }),
+      );
     } else {
       previewImagesFileList.value = [];
     }
-  }
-  catch (err: any) {
-    console.error('获取商品详情失败:', err);
-    ElMessage.error(err.message || '获取商品详情失败');
-  }
-  finally {
+  } catch (err: any) {
+    console.error("获取商品详情失败:", err);
+    ElMessage.error(err.message || "获取商品详情失败");
+  } finally {
     loading.value = false;
   }
 }
@@ -93,32 +100,29 @@ async function fetchProduct() {
 // 保存商品
 async function handleSubmit() {
   if (!formData.value.name?.trim()) {
-    ElMessage.warning('请输入商品名称');
+    ElMessage.warning("请输入商品名称");
     return;
   }
 
   saving.value = true;
   try {
     if (isEdit.value && productId.value) {
-      await updateProductApi({ 
-        ...formData.value, 
+      await updateProductApi({
+        ...formData.value,
         id: productId.value,
       });
-      ElMessage.success('更新商品成功');
-    }
-    else {
+      ElMessage.success("更新商品成功");
+    } else {
       await createProductApi(formData.value);
-      ElMessage.success('创建商品成功');
+      ElMessage.success("创建商品成功");
     }
 
     // 返回列表页
-    router.push('/product');
-  }
-  catch (err: any) {
-    console.error('保存商品失败:', err);
-    ElMessage.error(err.message || '保存商品失败');
-  }
-  finally {
+    router.push("/product");
+  } catch (err: any) {
+    console.error("保存商品失败:", err);
+    ElMessage.error(err.message || "保存商品失败");
+  } finally {
     saving.value = false;
   }
 }
@@ -138,8 +142,8 @@ onMounted(() => {
 // 封面图上传前的验证
 function beforeCoverImageUpload(file: File) {
   // 检查是否为图片文件
-  if (!file.type.startsWith('image/')) {
-    ElMessage.warning('请上传图片文件');
+  if (!file.type.startsWith("image/")) {
+    ElMessage.warning("请上传图片文件");
     return false;
   }
   return true;
@@ -148,17 +152,20 @@ function beforeCoverImageUpload(file: File) {
 // 封面图上传处理（自定义上传）
 async function handleCoverImageUpload(options: any) {
   const { file } = options;
-  
+
   coverImageUploading.value = true;
-  
+
   try {
     // 上传图片
-    const response = await requestClient.upload<{ path: string }>('/file/upload', { file });
-    
+    const response = await requestClient.upload<{ path: string }>(
+      "/file/upload",
+      { file },
+    );
+
     // 获取返回的path
     const path = response?.path || (response as any)?.data?.path;
     if (!path) {
-      ElMessage.error('上传失败，未返回文件路径');
+      ElMessage.error("上传失败，未返回文件路径");
       return;
     }
 
@@ -171,26 +178,24 @@ async function handleCoverImageUpload(options: any) {
     const fileItem = {
       name: file.name,
       url: imageUrl,
-      status: 'success' as const,
+      status: "success" as const,
       uid: Date.now(),
     };
     coverImageFileList.value = [fileItem];
-    
-    ElMessage.success('封面图上传成功');
-  }
-  catch (err: any) {
-    console.error('封面图上传失败:', err);
-    ElMessage.error(err.message || '封面图上传失败');
+
+    ElMessage.success("封面图上传成功");
+  } catch (err: any) {
+    console.error("封面图上传失败:", err);
+    ElMessage.error(err.message || "封面图上传失败");
     coverImageFileList.value = [];
-  }
-  finally {
+  } finally {
     coverImageUploading.value = false;
   }
 }
 
 // 移除封面图
 function handleCoverImageRemove() {
-  formData.value.coverImage = '';
+  formData.value.coverImage = "";
   coverImageFileList.value = [];
   return true;
 }
@@ -198,8 +203,8 @@ function handleCoverImageRemove() {
 // 预览图上传前的验证
 function beforePreviewImageUpload(file: File) {
   // 检查是否为图片文件
-  if (!file.type.startsWith('image/')) {
-    ElMessage.warning('请上传图片文件');
+  if (!file.type.startsWith("image/")) {
+    ElMessage.warning("请上传图片文件");
     return false;
   }
   return true;
@@ -208,18 +213,21 @@ function beforePreviewImageUpload(file: File) {
 // 预览图上传处理（自定义上传）
 async function handlePreviewImageUpload(options: any) {
   const { file } = options;
-  
+
   const uploadIndex = previewImagesFileList.value.length;
   previewImagesUploading.value[uploadIndex] = true;
-  
+
   try {
     // 上传图片
-    const response = await requestClient.upload<{ path: string }>('/file/upload', { file });
-    
+    const response = await requestClient.upload<{ path: string }>(
+      "/file/upload",
+      { file },
+    );
+
     // 获取返回的path
     const path = response?.path || (response as any)?.data?.path;
     if (!path) {
-      ElMessage.error('上传失败，未返回文件路径');
+      ElMessage.error("上传失败，未返回文件路径");
       return;
     }
 
@@ -235,25 +243,25 @@ async function handlePreviewImageUpload(options: any) {
     const fileItem = {
       name: file.name,
       url: imageUrl,
-      status: 'success' as const,
+      status: "success" as const,
       uid: Date.now() + uploadIndex,
     };
     previewImagesFileList.value.push(fileItem);
-    
-    ElMessage.success('预览图上传成功');
-  }
-  catch (err: any) {
-    console.error('预览图上传失败:', err);
-    ElMessage.error(err.message || '预览图上传失败');
-  }
-  finally {
+
+    ElMessage.success("预览图上传成功");
+  } catch (err: any) {
+    console.error("预览图上传失败:", err);
+    ElMessage.error(err.message || "预览图上传失败");
+  } finally {
     previewImagesUploading.value[uploadIndex] = false;
   }
 }
 
 // 移除预览图
 function handlePreviewImageRemove(file: UploadFiles[number]) {
-  const index = previewImagesFileList.value.findIndex(item => item.uid === file.uid);
+  const index = previewImagesFileList.value.findIndex(
+    (item) => item.uid === file.uid,
+  );
   if (index !== -1) {
     previewImagesFileList.value.splice(index, 1);
     if (formData.value.previewImages) {
@@ -265,9 +273,9 @@ function handlePreviewImageRemove(file: UploadFiles[number]) {
 </script>
 
 <template>
-  <div class="product-edit-container">
+  <div class="product-edit-container bg-background">
     <div class="product-edit-header">
-      <h2>{{ isEdit ? '编辑商品' : '添加商品' }}</h2>
+      <h2>{{ isEdit ? "编辑商品" : "添加商品" }}</h2>
       <div class="product-edit-actions">
         <ElButton @click="handleCancel">取消</ElButton>
         <ElButton type="primary" :loading="saving" @click="handleSubmit">
@@ -346,7 +354,6 @@ function handlePreviewImageRemove(file: UploadFiles[number]) {
 <style scoped>
 .product-edit-container {
   padding: 24px;
-  background: #fff;
   min-height: 100%;
 }
 
@@ -395,4 +402,3 @@ function handlePreviewImageRemove(file: UploadFiles[number]) {
   height: 148px;
 }
 </style>
-

@@ -1,23 +1,28 @@
 <script lang="ts" setup>
-import type { ArticleApi } from '#/api/core/article';
+import type { ArticleApi } from "#/api/core/article";
 
-import { computed, onMounted, ref, watch } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { computed, onMounted, ref, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
 
-import { EditorContent, useEditor } from '@tiptap/vue-3';
-import Image from '@tiptap/extension-image';
-import StarterKit from '@tiptap/starter-kit';
-
-import { ElButton, ElForm, ElFormItem, ElInput, ElMessage, ElSelect, ElOption, ElUpload } from 'element-plus';
-import type { UploadFiles } from 'element-plus';
+import { EditorContent, useEditor } from "@tiptap/vue-3";
+import Image from "@tiptap/extension-image";
+import StarterKit from "@tiptap/starter-kit";
 
 import {
-  createArticleApi,
-  getArticleApi,
-  updateArticleApi,
-} from '#/api';
-import { requestClient } from '#/api/request';
-import { getFileUrl } from '#/composables/file';
+  ElButton,
+  ElForm,
+  ElFormItem,
+  ElInput,
+  ElMessage,
+  ElSelect,
+  ElOption,
+  ElUpload,
+} from "element-plus";
+import type { UploadFiles } from "element-plus";
+
+import { createArticleApi, getArticleApi, updateArticleApi } from "#/api";
+import { requestClient } from "#/api/request";
+import { getFileUrl } from "#/composables/file";
 
 const route = useRoute();
 const router = useRouter();
@@ -27,11 +32,11 @@ const isEdit = computed(() => !!articleId.value);
 
 // 表单数据
 const formData = ref<ArticleApi.CreateArticleParams>({
-  title: '',
-  author: '',
-  previewImage: '',
-  content: '',
-  status: 'DRAFT',
+  title: "",
+  author: "",
+  previewImage: "",
+  content: "",
+  status: "DRAFT",
   createAt: new Date().toISOString(),
 });
 
@@ -50,7 +55,7 @@ const editor = useEditor({
       allowBase64: true,
     }),
   ],
-  content: '',
+  content: "",
   editable: true,
 });
 
@@ -61,16 +66,23 @@ function processImageUrls(htmlContent: string): string {
   }
 
   // 匹配img标签中的src属性
-  return htmlContent.replace(/<img([^>]*?)src=["']([^"']+)["']([^>]*?)>/gi, (match, before, src, after) => {
-    // 如果src已经是完整URL（http://或https://开头），则不需要处理
-    if (src.startsWith('http://') || src.startsWith('https://') || src.startsWith('data:')) {
-      return match;
-    }
-    
-    // 将相对路径转换为完整URL
-    const fullUrl = getFileUrl(src);
-    return `<img${before}src="${fullUrl}"${after}>`;
-  });
+  return htmlContent.replace(
+    /<img([^>]*?)src=["']([^"']+)["']([^>]*?)>/gi,
+    (match, before, src, after) => {
+      // 如果src已经是完整URL（http://或https://开头），则不需要处理
+      if (
+        src.startsWith("http://") ||
+        src.startsWith("https://") ||
+        src.startsWith("data:")
+      ) {
+        return match;
+      }
+
+      // 将相对路径转换为完整URL
+      const fullUrl = getFileUrl(src);
+      return `<img${before}src="${fullUrl}"${after}>`;
+    },
+  );
 }
 
 // 获取文章详情
@@ -81,10 +93,10 @@ async function fetchArticle() {
   loading.value = true;
   try {
     const article = await getArticleApi(articleId.value);
-    
+
     // 处理图片URL
     const processedContent = processImageUrls(article.content);
-    
+
     formData.value = {
       title: article.title,
       author: article.author,
@@ -96,12 +108,14 @@ async function fetchArticle() {
 
     // 设置预览图文件列表（如果有预览图）
     if (article.previewImage) {
-      previewImageFileList.value = [{
-        name: 'preview-image',
-        url: getFileUrl(article.previewImage),
-        status: 'success',
-        uid: Date.now(),
-      }];
+      previewImageFileList.value = [
+        {
+          name: "preview-image",
+          url: getFileUrl(article.previewImage),
+          status: "success",
+          uid: Date.now(),
+        },
+      ];
     } else {
       previewImageFileList.value = [];
     }
@@ -110,22 +124,24 @@ async function fetchArticle() {
     if (editor.value && processedContent) {
       editor.value.commands.setContent(processedContent);
     }
-  }
-  catch (err: any) {
-    console.error('获取文章详情失败:', err);
-    ElMessage.error(err.message || '获取文章详情失败');
-  }
-  finally {
+  } catch (err: any) {
+    console.error("获取文章详情失败:", err);
+    ElMessage.error(err.message || "获取文章详情失败");
+  } finally {
     loading.value = false;
   }
 }
 
 // 当文章数据加载后，更新编辑器内容
-watch(() => formData.value.content, (newContent) => {
-  if (editor.value && newContent && !editor.value.getHTML()) {
-    editor.value.commands.setContent(newContent);
-  }
-}, { immediate: true });
+watch(
+  () => formData.value.content,
+  (newContent) => {
+    if (editor.value && newContent && !editor.value.getHTML()) {
+      editor.value.commands.setContent(newContent);
+    }
+  },
+  { immediate: true },
+);
 
 // 保存文章
 async function handleSubmit() {
@@ -135,18 +151,18 @@ async function handleSubmit() {
 
   // 获取编辑器内容
   const content = editor.value.getHTML();
-  if (!content || content === '<p></p>') {
-    ElMessage.warning('请输入文章内容');
+  if (!content || content === "<p></p>") {
+    ElMessage.warning("请输入文章内容");
     return;
   }
 
   if (!formData.value.title.trim()) {
-    ElMessage.warning('请输入文章标题');
+    ElMessage.warning("请输入文章标题");
     return;
   }
 
   if (!formData.value.author.trim()) {
-    ElMessage.warning('请输入作者');
+    ElMessage.warning("请输入作者");
     return;
   }
 
@@ -160,21 +176,18 @@ async function handleSubmit() {
 
     if (isEdit.value && articleId.value) {
       await updateArticleApi({ ...payload, id: articleId.value });
-      ElMessage.success('更新文章成功');
-    }
-    else {
+      ElMessage.success("更新文章成功");
+    } else {
       await createArticleApi(payload);
-      ElMessage.success('创建文章成功');
+      ElMessage.success("创建文章成功");
     }
 
     // 返回列表页
-    router.push('/article');
-  }
-  catch (err: any) {
-    console.error('保存文章失败:', err);
-    ElMessage.error(err.message || '保存文章失败');
-  }
-  finally {
+    router.push("/article");
+  } catch (err: any) {
+    console.error("保存文章失败:", err);
+    ElMessage.error(err.message || "保存文章失败");
+  } finally {
     saving.value = false;
   }
 }
@@ -189,10 +202,10 @@ onMounted(() => {
   if (isEdit.value) {
     fetchArticle();
   }
-  
+
   // 监听编辑器的粘贴事件
   if (editor.value) {
-    editor.value.view.dom.addEventListener('paste', handlePaste);
+    editor.value.view.dom.addEventListener("paste", handlePaste);
   }
 });
 
@@ -203,8 +216,8 @@ async function handleImageUpload(file: File) {
   }
 
   // 检查是否为图片文件
-  if (!file.type.startsWith('image/')) {
-    ElMessage.warning('请上传图片文件');
+  if (!file.type.startsWith("image/")) {
+    ElMessage.warning("请上传图片文件");
     return false;
   }
 
@@ -213,12 +226,15 @@ async function handleImageUpload(file: File) {
     // 上传图片
     // 响应格式: { code: 200, msg: "ok", data: { path: "upload/..." } }
     // requestClient 会自动解包 data 字段，所以 response 直接是 { path: "upload/..." }
-    const response = await requestClient.upload<{ path: string }>('/file/upload', { file });
-    
+    const response = await requestClient.upload<{ path: string }>(
+      "/file/upload",
+      { file },
+    );
+
     // 获取返回的path
     const path = response.path;
     if (!path) {
-      ElMessage.error('上传失败，未返回文件路径');
+      ElMessage.error("上传失败，未返回文件路径");
       return false;
     }
 
@@ -227,16 +243,14 @@ async function handleImageUpload(file: File) {
 
     // 插入图片到编辑器
     editor.value.chain().focus().setImage({ src: imageUrl }).run();
-    
-    ElMessage.success('图片上传成功');
+
+    ElMessage.success("图片上传成功");
     return false; // 阻止默认上传
-  }
-  catch (err: any) {
-    console.error('图片上传失败:', err);
-    ElMessage.error(err.message || '图片上传失败');
+  } catch (err: any) {
+    console.error("图片上传失败:", err);
+    ElMessage.error(err.message || "图片上传失败");
     return false;
-  }
-  finally {
+  } finally {
     imageUploading.value = false;
   }
 }
@@ -254,7 +268,7 @@ function handlePaste(event: ClipboardEvent) {
 
   for (let i = 0; i < items.length; i++) {
     const item = items[i];
-    if (item && item.type.indexOf('image') !== -1) {
+    if (item && item.type.indexOf("image") !== -1) {
       event.preventDefault();
       const file = item.getAsFile();
       if (file) {
@@ -268,8 +282,8 @@ function handlePaste(event: ClipboardEvent) {
 // 预览图上传前的验证
 function beforePreviewImageUpload(file: File) {
   // 检查是否为图片文件
-  if (!file.type.startsWith('image/')) {
-    ElMessage.warning('请上传图片文件');
+  if (!file.type.startsWith("image/")) {
+    ElMessage.warning("请上传图片文件");
     return false;
   }
   return true;
@@ -278,28 +292,31 @@ function beforePreviewImageUpload(file: File) {
 // 预览图上传处理（自定义上传）
 async function handlePreviewImageUpload(options: any) {
   const { file } = options;
-  
+
   previewImageUploading.value = true;
-  
+
   try {
     // 上传图片
     // 响应格式: { code: 200, msg: "ok", data: { path: "upload/..." } }
     // requestClient 会自动解包 data 字段，所以 response 直接是 { path: "upload/..." }
-    const response = await requestClient.upload<{ path: string }>('/file/upload', { file });
-    
-    console.log('上传响应:', response);
-    
+    const response = await requestClient.upload<{ path: string }>(
+      "/file/upload",
+      { file },
+    );
+
+    console.log("上传响应:", response);
+
     // 获取返回的path
     const path = response?.path || (response as any)?.data?.path;
     if (!path) {
-      console.error('上传响应数据:', response);
-      ElMessage.error('上传失败，未返回文件路径');
+      console.error("上传响应数据:", response);
+      ElMessage.error("上传失败，未返回文件路径");
       return;
     }
 
-    console.log('文件路径:', path);
+    console.log("文件路径:", path);
     const imageUrl = getFileUrl(path);
-    console.log('完整URL:', imageUrl);
+    console.log("完整URL:", imageUrl);
 
     // 设置预览图路径（保存相对路径）
     formData.value.previewImage = path;
@@ -308,36 +325,34 @@ async function handlePreviewImageUpload(options: any) {
     const fileItem = {
       name: file.name,
       url: imageUrl,
-      status: 'success' as const,
+      status: "success" as const,
       uid: Date.now(),
     };
-    console.log('文件列表项:', fileItem);
+    console.log("文件列表项:", fileItem);
     previewImageFileList.value = [fileItem];
-    
-    ElMessage.success('预览图上传成功');
-  }
-  catch (err: any) {
-    console.error('预览图上传失败:', err);
-    ElMessage.error(err.message || '预览图上传失败');
+
+    ElMessage.success("预览图上传成功");
+  } catch (err: any) {
+    console.error("预览图上传失败:", err);
+    ElMessage.error(err.message || "预览图上传失败");
     previewImageFileList.value = [];
-  }
-  finally {
+  } finally {
     previewImageUploading.value = false;
   }
 }
 
 // 移除预览图
 function handlePreviewImageRemove() {
-  formData.value.previewImage = '';
+  formData.value.previewImage = "";
   previewImageFileList.value = [];
   return true;
 }
 </script>
 
 <template>
-  <div class="article-edit-container">
+  <div class="article-edit-container bg-background">
     <div class="article-edit-header">
-      <h2>{{ isEdit ? '编辑文章' : '添加文章' }}</h2>
+      <h2>{{ isEdit ? "编辑文章" : "添加文章" }}</h2>
       <div class="article-edit-actions">
         <ElButton @click="handleCancel">取消</ElButton>
         <ElButton type="primary" :loading="saving" @click="handleSubmit">
@@ -410,15 +425,23 @@ function handlePreviewImageRemove() {
               </ElButton>
               <ElButton
                 size="small"
-                :class="{ 'is-active': editor?.isActive('heading', { level: 1 }) }"
-                @click="editor?.chain().focus().toggleHeading({ level: 1 }).run()"
+                :class="{
+                  'is-active': editor?.isActive('heading', { level: 1 }),
+                }"
+                @click="
+                  editor?.chain().focus().toggleHeading({ level: 1 }).run()
+                "
               >
                 H1
               </ElButton>
               <ElButton
                 size="small"
-                :class="{ 'is-active': editor?.isActive('heading', { level: 2 }) }"
-                @click="editor?.chain().focus().toggleHeading({ level: 2 }).run()"
+                :class="{
+                  'is-active': editor?.isActive('heading', { level: 2 }),
+                }"
+                @click="
+                  editor?.chain().focus().toggleHeading({ level: 2 }).run()
+                "
               >
                 H2
               </ElButton>
@@ -472,7 +495,6 @@ function handlePreviewImageRemove() {
 <style scoped>
 .article-edit-container {
   padding: 24px;
-  background: #fff;
   min-height: 100%;
 }
 
@@ -623,4 +645,3 @@ function handlePreviewImageRemove() {
   color: inherit;
 }
 </style>
-
