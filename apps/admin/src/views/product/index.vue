@@ -73,6 +73,7 @@ const gridOptions: VxeGridProps<RowType> = {
     labelField: 'id',
   },
   columns: [
+    { field: 'id', title: '商品id', minWidth: 200 },
     { field: 'coverImage', title: '封面图', cellRender: { name: 'CellImage' }, width: 120 },
     { field: 'name', title: '商品名称', minWidth: 200 },
     {

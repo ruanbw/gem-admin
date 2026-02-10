@@ -27,10 +27,6 @@ export namespace ProductSkuApi {
      */
     productId: number;
     /**
-     * SKU编码
-     */
-    skuCode: string;
-    /**
      * 销售价
      */
     price: number;
@@ -68,10 +64,6 @@ export namespace ProductSkuApi {
      * 商品id
      */
     productId: number;
-    /**
-     * SKU编码
-     */
-    skuCode: string;
     /**
      * 模型url
      */
@@ -113,7 +105,6 @@ export namespace ProductSkuApi {
   /** 创建SKU接口参数 */
   export interface CreateProductSkuParams {
     productId: number;
-    skuCode: string;
     modelUrl?: string;
     coverImage: string;
     price: number;
@@ -127,7 +118,6 @@ export namespace ProductSkuApi {
   export interface UpdateProductSkuParams {
     id: number;
     productId: number;
-    skuCode?: string;
     modelUrl?: string;
     coverImage?: string;
     price?: number;

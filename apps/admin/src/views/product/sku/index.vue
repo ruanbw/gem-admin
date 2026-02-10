@@ -84,47 +84,12 @@ const gridOptions: VxeGridProps<RowType> = {
   columns: [
     { field: 'id', title: 'ID', width: 80 },
     { field: 'productId', title: '商品ID', width: 100 },
-    { field: 'skuCode', title: 'SKU编码', minWidth: 150 },
     { field: 'price', title: '销售价', width: 120, formatter: ({ cellValue }) => `¥${cellValue?.toFixed(2) || '0.00'}` },
     { field: 'stock', title: '库存', width: 100 },
     {
-      field: 'specJson',
+      field: 'specValue',
       title: '规格信息',
       minWidth: 200,
-      formatter: ({ cellValue, row }) => {
-        // 调试：输出原始值
-        console.log('specJson formatter - cellValue:', cellValue, 'type:', typeof cellValue, 'row:', row);
-        
-        if (!cellValue) {
-          return '-';
-        }
-        
-        try {
-          // 如果是字符串，先解析为对象
-          let specObj: Record<string, string>;
-          if (typeof cellValue === 'string') {
-            specObj = JSON.parse(cellValue);
-          }
-          else if (typeof cellValue === 'object') {
-            specObj = cellValue;
-          }
-          else {
-            console.warn('specJson格式不正确:', typeof cellValue, cellValue);
-            return '-';
-          }
-          
-          // 格式化为更易读的格式：规格名称: 规格值文本
-          const entries = Object.entries(specObj);
-          if (entries.length === 0) {
-            return '-';
-          }
-          return entries.map(([specName, specValueText]) => `${specName}:${specValueText}`).join(', ');
-        }
-        catch (err) {
-          console.error('解析specJson失败:', err, 'cellValue:', cellValue, 'type:', typeof cellValue);
-          return '-';
-        }
-      },
     },
     {
       field: 'status',
@@ -699,7 +664,7 @@ async function handleSubmit() {
  */
 async function onDeleteSku(row: RowType) {
   ElMessageBox.confirm(
-    `删除后数据不可恢复，确认删除SKU【${row.skuCode}】吗？`,
+    `删除后数据不可恢复，确认删除SKU吗？`,
     '警告',
     {
       type: 'warning',
