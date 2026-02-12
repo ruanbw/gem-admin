@@ -10,10 +10,12 @@ export const USER_STATUS = {
   deleted: '已删除',
 };
 
-export const USER_STATUS_OPTIONS = Object.entries(USER_STATUS).map(([value, label]) => ({
-  value,
-  label,
-}));
+export const USER_STATUS_OPTIONS = Object.entries(USER_STATUS).map(
+  ([value, label]) => ({
+    value,
+    label,
+  }),
+);
 
 export const USER_STATUS_TAG_TYPE = {
   normal: 'success',

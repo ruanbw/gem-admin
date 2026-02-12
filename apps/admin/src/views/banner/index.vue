@@ -1,9 +1,9 @@
 <script lang="ts" setup>
-import type { UploadFiles } from "element-plus";
+import type { UploadFiles } from 'element-plus';
 
-import type { BannerApi } from "#/api/core/banner";
+import type { BannerApi } from '#/api/core/banner';
 
-import { onMounted, ref } from "vue";
+import { onMounted, ref } from 'vue';
 
 import {
   ElButton,
@@ -12,11 +12,11 @@ import {
   ElInput,
   ElMessage,
   ElUpload,
-} from "element-plus";
+} from 'element-plus';
 
-import { getBannerApi, saveBannerApi } from "#/api";
-import { requestClient } from "#/api/request";
-import { getFileUrl } from "#/composables/file";
+import { getBannerApi, saveBannerApi } from '#/api';
+import { requestClient } from '#/api/request';
+import { getFileUrl } from '#/composables/file';
 
 // 轮播项接口（包含上传文件列表）
 interface BannerItemWithFileList extends BannerApi.BannerItem {
@@ -52,7 +52,7 @@ async function fetchBanner() {
               {
                 name: `banner-${index}`,
                 url: getFileUrl(item.imageUrl),
-                status: "success" as const,
+                status: 'success' as const,
                 uid: Date.now() + index,
               },
             ]
@@ -64,8 +64,8 @@ async function fetchBanner() {
       formData.value.items = [];
     }
   } catch (error: any) {
-    console.error("获取轮播图失败:", error);
-    ElMessage.error(error.message || "获取轮播图失败");
+    console.error('获取轮播图失败:', error);
+    ElMessage.error(error.message || '获取轮播图失败');
     formData.value.items = [];
   } finally {
     loading.value = false;
@@ -78,7 +78,7 @@ async function fetchBanner() {
 async function handleSubmit() {
   // 验证
   if (formData.value.items.length === 0) {
-    ElMessage.warning("至少添加一个轮播项");
+    ElMessage.warning('至少添加一个轮播项');
     return;
   }
 
@@ -106,10 +106,10 @@ async function handleSubmit() {
     };
 
     await saveBannerApi(request);
-    ElMessage.success("保存成功");
+    ElMessage.success('保存成功');
   } catch (error: any) {
-    console.error("保存轮播图失败:", error);
-    ElMessage.error(error.message || "保存轮播图失败");
+    console.error('保存轮播图失败:', error);
+    ElMessage.error(error.message || '保存轮播图失败');
   } finally {
     saving.value = false;
   }
@@ -120,8 +120,8 @@ async function handleSubmit() {
  */
 function addBannerItem() {
   formData.value.items.push({
-    imageUrl: "",
-    linkUrl: "",
+    imageUrl: '',
+    linkUrl: '',
     fileList: [],
     uploading: false,
     key: `banner-item-${Date.now()}-${Math.random()}`,
@@ -164,8 +164,8 @@ function moveDown(index: number) {
  */
 function beforeImageUpload(file: File) {
   // 检查是否为图片文件
-  if (!file.type.startsWith("image/")) {
-    ElMessage.warning("请上传图片文件");
+  if (!file.type.startsWith('image/')) {
+    ElMessage.warning('请上传图片文件');
     return false;
   }
   return true;
@@ -182,14 +182,14 @@ async function handleImageUpload(options: any, item: BannerItemWithFileList) {
   try {
     // 上传图片
     const response = await requestClient.upload<{ path: string }>(
-      "/file/upload",
+      '/file/upload',
       { file },
     );
 
     // 获取返回的path
     const path = response?.path || (response as any)?.data?.path;
     if (!path) {
-      ElMessage.error("上传失败，未返回文件路径");
+      ElMessage.error('上传失败，未返回文件路径');
       return;
     }
 
@@ -202,15 +202,15 @@ async function handleImageUpload(options: any, item: BannerItemWithFileList) {
     const fileItem = {
       name: file.name,
       url: imageUrl,
-      status: "success" as const,
+      status: 'success' as const,
       uid: Date.now(),
     };
     item.fileList = [fileItem];
 
-    ElMessage.success("图片上传成功");
+    ElMessage.success('图片上传成功');
   } catch (error: any) {
-    console.error("图片上传失败:", error);
-    ElMessage.error(error.message || "图片上传失败");
+    console.error('图片上传失败:', error);
+    ElMessage.error(error.message || '图片上传失败');
     item.fileList = [];
   } finally {
     item.uploading = false;
@@ -221,7 +221,7 @@ async function handleImageUpload(options: any, item: BannerItemWithFileList) {
  * 移除图片
  */
 function handleImageRemove(item: BannerItemWithFileList) {
-  item.imageUrl = "";
+  item.imageUrl = '';
   item.fileList = [];
   return true;
 }

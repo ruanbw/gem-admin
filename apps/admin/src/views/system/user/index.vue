@@ -23,7 +23,11 @@ import {
   getUserListApi,
   updateUserApi,
 } from '#/api';
-import { USER_STATUS, USER_STATUS_OPTIONS, USER_STATUS_TAG_TYPE } from '#/api/core/user';
+import {
+  USER_STATUS,
+  USER_STATUS_OPTIONS,
+  USER_STATUS_TAG_TYPE,
+} from '#/api/core/user';
 import { getFileUrl } from '#/composables/file';
 
 interface RowType extends UserApi.PaginatedUser {
@@ -381,9 +385,13 @@ async function onUpdate(values: Record<string, any>) {
  * 删除用户
  */
 async function onDeleteUser(row: RowType) {
-  ElMessageBox.confirm(`删除后数据不可恢复，确认删除【${row.email}】的用户吗？`, '警告', {
-    type: 'warning',
-  }).then(async () => {
+  ElMessageBox.confirm(
+    `删除后数据不可恢复，确认删除【${row.email}】的用户吗？`,
+    '警告',
+    {
+      type: 'warning',
+    },
+  ).then(async () => {
     await deleteUserApi(row.id!);
     await GridApi.reload();
   });
@@ -395,7 +403,9 @@ async function onDeleteUser(row: RowType) {
     <Grid>
       <template #toolbar-tools>
         <AccessControl :codes="['superadmin']">
-          <ElButton class="mr-2" type="primary" @click="onCreateUser"> 添加用户 </ElButton>
+          <ElButton class="mr-2" type="primary" @click="onCreateUser">
+            添加用户
+          </ElButton>
         </AccessControl>
       </template>
       <template #status="{ row }">
