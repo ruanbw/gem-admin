@@ -45,7 +45,7 @@
   "code": "Security code",
   "codeTip": "Security code required {0} characters",
   "mobile": "Mobile",
-  "emailCodeLogin": "Mobile Login",
+  "mobileLogin": "Mobile Login",
   "mobileTip": "Please enter mobile number",
   "mobileErrortip": "The phone number format is incorrect",
   "sendCode": "Get Security code",

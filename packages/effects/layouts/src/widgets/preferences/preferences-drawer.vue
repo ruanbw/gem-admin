@@ -19,7 +19,7 @@ import { computed, ref } from 'vue';
 import { Copy, Pin, PinOff, RotateCw } from '@vben/icons';
 import { $t, loadLocaleMessages } from '@vben/locales';
 import {
-  clearPreferencesCache,
+  clearCache,
   preferences,
   resetPreferences,
   usePreferences,
@@ -88,6 +88,7 @@ const themeMode = defineModel<ThemeModeType>('themeMode');
 const themeRadius = defineModel<string>('themeRadius');
 const themeFontSize = defineModel<number>('themeFontSize');
 const themeSemiDarkSidebar = defineModel<boolean>('themeSemiDarkSidebar');
+const themeSemiDarkSidebarSub = defineModel<boolean>('themeSemiDarkSidebarSub');
 const themeSemiDarkHeader = defineModel<boolean>('themeSemiDarkHeader');
 
 const sidebarEnable = defineModel<boolean>('sidebarEnable');
@@ -120,6 +121,7 @@ const tabbarShowIcon = defineModel<boolean>('tabbarShowIcon');
 const tabbarShowMore = defineModel<boolean>('tabbarShowMore');
 const tabbarShowMaximize = defineModel<boolean>('tabbarShowMaximize');
 const tabbarPersist = defineModel<boolean>('tabbarPersist');
+const tabbarVisitHistory = defineModel<boolean>('tabbarVisitHistory');
 const tabbarDraggable = defineModel<boolean>('tabbarDraggable');
 const tabbarWheelable = defineModel<boolean>('tabbarWheelable');
 const tabbarStyleType = defineModel<string>('tabbarStyleType');
@@ -228,7 +230,7 @@ async function handleCopy() {
 
 async function handleClearCache() {
   resetPreferences();
-  clearPreferencesCache();
+  clearCache();
   emit('clearPreferencesAndLogout');
 }
 
@@ -318,6 +320,7 @@ async function handleReset() {
                 v-model="themeMode"
                 v-model:theme-semi-dark-header="themeSemiDarkHeader"
                 v-model:theme-semi-dark-sidebar="themeSemiDarkSidebar"
+                v-model:theme-semi-dark-sidebar-sub="themeSemiDarkSidebarSub"
               />
             </Block>
             <Block :title="$t('preferences.theme.builtin.title')">
@@ -400,6 +403,7 @@ async function handleReset() {
                 v-model:tabbar-draggable="tabbarDraggable"
                 v-model:tabbar-enable="tabbarEnable"
                 v-model:tabbar-persist="tabbarPersist"
+                v-model:tabbar-visit-history="tabbarVisitHistory"
                 v-model:tabbar-show-icon="tabbarShowIcon"
                 v-model:tabbar-show-maximize="tabbarShowMaximize"
                 v-model:tabbar-show-more="tabbarShowMore"
@@ -488,6 +492,6 @@ async function handleReset() {
 :deep(.sticky-tabs-header [role='tablist']) {
   position: sticky;
   top: -12px;
-  z-index: 10;
+  z-index: 9999;
 }
 </style>

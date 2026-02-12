@@ -104,7 +104,7 @@ async function changeAccount(role: string) {
       <AccessControl :codes="['super']" type="role">
         <Button class="mr-4"> Super 角色可见 </Button>
       </AccessControl>
-      <AccessControl :codes="['superadmin']" type="role">
+      <AccessControl :codes="['admin']" type="role">
         <Button class="mr-4"> Admin 角色可见 </Button>
       </AccessControl>
       <AccessControl :codes="['user']" type="role">

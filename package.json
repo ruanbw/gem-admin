@@ -31,7 +31,6 @@
     "build:docker": "./scripts/deploy/build-local-docker-image.sh",
     "build:docs": "pnpm run build --filter=@vben/docs",
     "build:ele": "pnpm run build --filter=@vben/web-ele",
-    "build:admin": "pnpm run build --filter=@vben/admin",
     "build:naive": "pnpm run build --filter=@vben/web-naive",
     "build:tdesign": "pnpm run build --filter=@vben/web-tdesign",
     "build:play": "pnpm run build --filter=@vben/playground",
@@ -45,9 +44,9 @@
     "commit": "czg",
     "dev": "turbo-run dev",
     "dev:antd": "pnpm -F @vben/web-antd run dev",
+    "dev:antdv-next": "pnpm -F @vben/web-antdv-next run dev",
     "dev:docs": "pnpm -F @vben/docs run dev",
     "dev:ele": "pnpm -F @vben/web-ele run dev",
-    "dev:admin": "pnpm -F @vben/admin run dev",
     "dev:naive": "pnpm -F @vben/web-naive run dev",
     "dev:tdesign": "pnpm -F @vben/web-tdesign run dev",
     "dev:play": "pnpm -F @vben/playground run dev",
@@ -84,14 +83,11 @@
     "autoprefixer": "catalog:",
     "cross-env": "catalog:",
     "cspell": "catalog:",
-    "eslint": "catalog:",
     "happy-dom": "catalog:",
     "is-ci": "catalog:",
     "lefthook": "catalog:",
     "playwright": "catalog:",
-    "prettier": "catalog:",
     "rimraf": "catalog:",
-    "stylelint": "catalog:",
     "tailwindcss": "catalog:",
     "turbo": "catalog:",
     "typescript": "catalog:",
@@ -102,28 +98,8 @@
     "vue-tsc": "catalog:"
   },
   "engines": {
-    "node": ">=20.12.0",
+    "node": ">=20.19.0",
     "pnpm": ">=10.0.0"
   },
-  "packageManager": "pnpm@10.22.0",
-  "pnpm": {
-    "peerDependencyRules": {
-      "allowedVersions": {
-        "eslint": "*"
-      }
-    },
-    "overrides": {
-      "@ast-grep/napi": "catalog:",
-      "@ctrl/tinycolor": "catalog:",
-      "clsx": "catalog:",
-      "esbuild": "0.25.3",
-      "jiti": "catalog:",
-      "pinia": "catalog:",
-      "vue": "catalog:"
-    },
-    "neverBuiltDependencies": [
-      "canvas",
-      "node-gyp"
-    ]
-  }
+  "packageManager": "pnpm@10.28.2"
 }

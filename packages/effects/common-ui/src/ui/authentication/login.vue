@@ -154,7 +154,7 @@ defineExpose({
         variant="outline"
         @click="handleGo(codeLoginPath)"
       >
-        {{ $t('authentication.emailCodeLogin') }}
+        {{ $t('authentication.mobileLogin') }}
       </VbenButton>
       <VbenButton
         v-if="showQrcodeLogin"
