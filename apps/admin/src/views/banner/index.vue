@@ -1,14 +1,22 @@
 <script lang="ts" setup>
-import type { BannerApi } from '#/api/core/banner';
+import type { UploadFiles } from "element-plus";
 
-import { onMounted, ref } from 'vue';
+import type { BannerApi } from "#/api/core/banner";
 
-import { ElButton, ElForm, ElFormItem, ElInput, ElMessage, ElUpload } from 'element-plus';
-import type { UploadFiles } from 'element-plus';
+import { onMounted, ref } from "vue";
 
-import { getBannerApi, saveBannerApi } from '#/api';
-import { requestClient } from '#/api/request';
-import { getFileUrl } from '#/composables/file';
+import {
+  ElButton,
+  ElForm,
+  ElFormItem,
+  ElInput,
+  ElMessage,
+  ElUpload,
+} from "element-plus";
+
+import { getBannerApi, saveBannerApi } from "#/api";
+import { requestClient } from "#/api/request";
+import { getFileUrl } from "#/composables/file";
 
 // 轮播项接口（包含上传文件列表）
 interface BannerItemWithFileList extends BannerApi.BannerItem {
@@ -32,32 +40,34 @@ async function fetchBanner() {
   loading.value = true;
   try {
     const response = await getBannerApi();
-    
-    if (response && response.items) {
+
+    // eslint-disable-next-line unicorn/prefer-ternary
+    if (response?.items) {
       // 转换数据格式，添加fileList和uploading
       formData.value.items = response.items.map((item, index) => ({
         imageUrl: item.imageUrl,
         linkUrl: item.linkUrl,
-        fileList: item.imageUrl ? [{
-          name: `banner-${index}`,
-          url: getFileUrl(item.imageUrl),
-          status: 'success' as const,
-          uid: Date.now() + index,
-        }] : [],
+        fileList: item.imageUrl
+          ? [
+              {
+                name: `banner-${index}`,
+                url: getFileUrl(item.imageUrl),
+                status: "success" as const,
+                uid: Date.now() + index,
+              },
+            ]
+          : [],
         uploading: false,
         key: `banner-item-${Date.now()}-${index}`,
       }));
-    }
-    else {
+    } else {
       formData.value.items = [];
     }
-  }
-  catch (err: any) {
-    console.error('获取轮播图失败:', err);
-    ElMessage.error(err.message || '获取轮播图失败');
+  } catch (error: any) {
+    console.error("获取轮播图失败:", error);
+    ElMessage.error(error.message || "获取轮播图失败");
     formData.value.items = [];
-  }
-  finally {
+  } finally {
     loading.value = false;
   }
 }
@@ -68,7 +78,7 @@ async function fetchBanner() {
 async function handleSubmit() {
   // 验证
   if (formData.value.items.length === 0) {
-    ElMessage.warning('至少添加一个轮播项');
+    ElMessage.warning("至少添加一个轮播项");
     return;
   }
 
@@ -89,20 +99,18 @@ async function handleSubmit() {
   try {
     // 转换为API请求格式
     const request: BannerApi.SaveBannerRequest = {
-      items: formData.value.items.map(item => ({
+      items: formData.value.items.map((item) => ({
         imageUrl: item.imageUrl,
         linkUrl: item.linkUrl.trim(),
       })),
     };
 
     await saveBannerApi(request);
-    ElMessage.success('保存成功');
-  }
-  catch (err: any) {
-    console.error('保存轮播图失败:', err);
-    ElMessage.error(err.message || '保存轮播图失败');
-  }
-  finally {
+    ElMessage.success("保存成功");
+  } catch (error: any) {
+    console.error("保存轮播图失败:", error);
+    ElMessage.error(error.message || "保存轮播图失败");
+  } finally {
     saving.value = false;
   }
 }
@@ -112,8 +120,8 @@ async function handleSubmit() {
  */
 function addBannerItem() {
   formData.value.items.push({
-    imageUrl: '',
-    linkUrl: '',
+    imageUrl: "",
+    linkUrl: "",
     fileList: [],
     uploading: false,
     key: `banner-item-${Date.now()}-${Math.random()}`,
@@ -154,10 +162,10 @@ function moveDown(index: number) {
 /**
  * 图片上传前的验证
  */
-function beforeImageUpload(file: File, item: BannerItemWithFileList) {
+function beforeImageUpload(file: File) {
   // 检查是否为图片文件
-  if (!file.type.startsWith('image/')) {
-    ElMessage.warning('请上传图片文件');
+  if (!file.type.startsWith("image/")) {
+    ElMessage.warning("请上传图片文件");
     return false;
   }
   return true;
@@ -168,17 +176,20 @@ function beforeImageUpload(file: File, item: BannerItemWithFileList) {
  */
 async function handleImageUpload(options: any, item: BannerItemWithFileList) {
   const { file } = options;
-  
+
   item.uploading = true;
-  
+
   try {
     // 上传图片
-    const response = await requestClient.upload<{ path: string }>('/file/upload', { file });
-    
+    const response = await requestClient.upload<{ path: string }>(
+      "/file/upload",
+      { file },
+    );
+
     // 获取返回的path
     const path = response?.path || (response as any)?.data?.path;
     if (!path) {
-      ElMessage.error('上传失败，未返回文件路径');
+      ElMessage.error("上传失败，未返回文件路径");
       return;
     }
 
@@ -191,19 +202,17 @@ async function handleImageUpload(options: any, item: BannerItemWithFileList) {
     const fileItem = {
       name: file.name,
       url: imageUrl,
-      status: 'success' as const,
+      status: "success" as const,
       uid: Date.now(),
     };
     item.fileList = [fileItem];
-    
-    ElMessage.success('图片上传成功');
-  }
-  catch (err: any) {
-    console.error('图片上传失败:', err);
-    ElMessage.error(err.message || '图片上传失败');
+
+    ElMessage.success("图片上传成功");
+  } catch (error: any) {
+    console.error("图片上传失败:", error);
+    ElMessage.error(error.message || "图片上传失败");
     item.fileList = [];
-  }
-  finally {
+  } finally {
     item.uploading = false;
   }
 }
@@ -212,7 +221,7 @@ async function handleImageUpload(options: any, item: BannerItemWithFileList) {
  * 移除图片
  */
 function handleImageRemove(item: BannerItemWithFileList) {
-  item.imageUrl = '';
+  item.imageUrl = "";
   item.fileList = [];
   return true;
 }
@@ -224,7 +233,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="banner-container">
+  <div class="banner-container bg-background">
     <div class="banner-header">
       <h2>轮播图管理</h2>
       <div class="banner-actions">
@@ -274,7 +283,7 @@ onMounted(() => {
                 <ElUpload
                   :file-list="item.fileList"
                   :limit="1"
-                  :before-upload="(file) => beforeImageUpload(file, item)"
+                  :before-upload="(file) => beforeImageUpload(file)"
                   :http-request="(options) => handleImageUpload(options, item)"
                   :on-remove="() => handleImageRemove(item)"
                   accept="image/*"
@@ -312,17 +321,16 @@ onMounted(() => {
 
 <style scoped>
 .banner-container {
-  padding: 24px;
-  background: #fff;
   min-height: 100%;
+  padding: 24px;
 }
 
 .banner-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
+  justify-content: space-between;
   padding-bottom: 16px;
+  margin-bottom: 24px;
   border-bottom: 1px solid #e5e7eb;
 }
 
@@ -346,19 +354,18 @@ onMounted(() => {
 }
 
 .banner-item {
-  margin-bottom: 24px;
   padding: 16px;
+  margin-bottom: 24px;
   border: 1px solid #e5e7eb;
   border-radius: 4px;
-  background: #fafafa;
 }
 
 .banner-item-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  justify-content: space-between;
   padding-bottom: 12px;
+  margin-bottom: 16px;
   border-bottom: 1px solid #e5e7eb;
 }
 
@@ -379,8 +386,8 @@ onMounted(() => {
 }
 
 .banner-item-add {
-  margin-top: 16px;
   padding: 16px;
+  margin-top: 16px;
   text-align: center;
   border: 1px dashed #dcdfe6;
   border-radius: 4px;
